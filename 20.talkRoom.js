@@ -106,4 +106,6 @@ io.on("connection",(socket)=>{
     })
 });
 
-server.listen(3000);
+server.listen(3000,()=>{
+    console.log("JmmTalk is running in port 3000...");
+});

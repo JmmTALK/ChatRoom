@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+</head>
+<body>
+    <form action="/regist" method="post">
+        用户：<input autocomplete="off" type="text" name="username" id="username" placeholder="请输入用户名"> <span id="namemsg" style="color:red"></span><br><br>
+        密码：<input type="password" name="password" id="password" required placeholder="请输入密码"> <span id="passmsg" style="color:red"></span><br><br>
+        <input type="submit" value="注册" id="submit" disabled>
+    </form>
+    <script>
+        function $(id){
+            return document.getElementById(id)
+        }
+        $("submit").isok1=false;
+        $("submit").isok2=false;
+        $("username").onblur=function(){
+            let username=this.value.trim();
+            if(username===""){
+                $('namemsg').innerHTML="用户名不能为空";
+                $("submit").isok1=false;
+                return;
+            }else{
+                let xhr=new XMLHttpRequest();
+                xhr.open("get",`/check?username=${this.value}`);
+                xhr.onreadystatechange=function(){
+                    if(xhr.readyState==4 && xhr.status==200){
+                        $('namemsg').innerHTML=xhr.responseText;
+                        $("namemsg").style.color= xhr.responseText==="可以使用该用户名" ? 'green' : 'red';
+                        $("submit").isok1= xhr.responseText==="可以使用该用户名" ? true : false;
+                        $("submit").disabled=($("submit").isok1 && $("submit").isok2) ? false : true;
+                    }
+                };
+                xhr.send(null);
+            }
+        };
+        $("password").oninput=function(){
+            let password=this.value.trim();
+            if(password===""){
+                $('passmsg').innerHTML="密码不能为空";
+                $("submit").isok2=false;
+                return;
+            }else{
+                $('passmsg').innerHTML="";
+                $("submit").isok2=true;
+                $("submit").disabled=($("submit").isok1 && $("submit").isok2)?false:true;
+            }
+        };
+
+    </script>
+</body>
+</html>
