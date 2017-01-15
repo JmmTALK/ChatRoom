@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Amm Talk</title>
+	<script src="jquery-1.11.3.min.js"></script>
+	<script src="socket.io.min.js"></script>
+	<style>
+		body{
+			background-color: #ccc;
+		}
+		#wrap{
+			background-color: #fff;
+			margin:0 auto;
+			width:400px;
+			padding:20px;
+			height:500px;
+		}
+		#talk{
+			height:380px;
+			border-bottom:1px solid #ccc;
+			background-color: skyblue;
+			overflow-y: scroll;
+			padding:10px;
+			
+		}
+		::-webkit-scrollbar{width:0px}
+		#talk p{
+			font-family: '微软雅黑';
+			margin-bottom: 10px;
+			overflow: hidden;
+		}
+		#talk p span{
+			font-family: '微软雅黑';
+			word-break: break-all;
+			word-wrap: break-word;
+			background-color: #3f3;
+			display:inline-block;
+			border-radius:5px;
+			min-width: 20px;
+			min-height:20px;
+			max-width: 200px;
+			padding:5px 10px;
+		}
+		#write{
+			height:80px;
+			background-color: #f00;
+			padding:10px;
+			position: relative;
+		}
+		#write textarea{
+			height:80px;
+			width:100%;
+			border:0 none;
+			resize: none;
+		}
+		#write button {
+			position: absolute;
+			bottom:10px;
+			right:10px;
+		}
+		.mine{
+			float: right;
+		}
+	</style>
+</head>
+<body>
+	<div id="wrap">
+		<section id="talk">
+		<div id="container">
+		</div>
+		</section>
+		<section id="write">
+				<textarea id="msg"></textarea>
+				<button>发送</button>
+		</section>
+		<i><%=data[0].username%> </i> <a href="/logout" style="color:red"> 注销</a>
+	</div>
+	<script>
+		var socket=io.connect("http://192.168.0.125:3000");
+		var username=$("i").html();
+		$("textarea").on("keypress",function(e){
+			if(e.which==13){
+				e.preventDefault();
+				$("button").click();
+			}
+		})
+		$("button").on("click",function(){
+			$("#msg").focus();
+			var reg=/</g,reg2=/>/g;
+			var msg=$.trim($("#msg").val().replace(reg,"&lt;").replace(reg2,"&gt;"));
+			if(msg=='')return;
+			$("#msg").val('');
+			$("#container").append(`<p><span class="mine">${msg}</span></p>`);
+	    	$("#talk").scrollTop($("#container").height()-360);
+            socket.emit("sendmsg",{msg:msg,username:username})
+        });
+        socket.on("locate",function(data){
+        	$("#container").append(`<p><strong style="font-size: 14px;">${data.username}: </strong><span>${data.msg}</span></p>`);
+        	$("#talk").scrollTop($("#container").height()-360);
+        })
+	</script>
+</body>
+</html>
