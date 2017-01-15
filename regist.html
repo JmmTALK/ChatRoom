@@ -17,14 +17,23 @@
         $("submit").isok1=false;
         $("submit").isok2=false;
         $("username").onblur=function(){
-            let username=this.value.trim();
+            var username=this.value.trim();
             if(username===""){
                 $('namemsg').innerHTML="用户名不能为空";
                 $("submit").isok1=false;
                 return;
             }else{
-                let xhr=new XMLHttpRequest();
-                xhr.open("get",`/check?username=${this.value}`);
+                var xhr = null;
+                try{
+                    xhr = new XMLHttpRequest()
+                }catch(e1){
+                    try{
+                        xhr = new ActiveXObject("Microsoft.XMLHTTP")
+                    }catch(e2){
+                        xhr = new ActiveXObject("Msxml2.XMLHTTP")
+                    }
+                }
+                xhr.open("get",'/check?username='+this.value);
                 xhr.onreadystatechange=function(){
                     if(xhr.readyState==4 && xhr.status==200){
                         $('namemsg').innerHTML=xhr.responseText;
@@ -37,7 +46,7 @@
             }
         };
         $("password").oninput=function(){
-            let password=this.value.trim();
+            var password=this.value.trim();
             if(password===""){
                 $('passmsg').innerHTML="密码不能为空";
                 $("submit").isok2=false;
